@@ -1,0 +1,52 @@
+####################
+# Thermo_tools     #
+#                  #
+# R tools for      #
+# thermodynamic    #
+# computations     # 
+####################
+
+L = 2.5e6   # J/kg
+L0= 2.555e6 # J/kg, see Bryan (2008)
+Rv = 461.5  # J/kg/K
+Rd = 287    # J/kg/K
+epsilon = Rd/Rv
+Cp = 1004   # J/kg/K
+einf = 2.53e11 # Pa
+g = 9.8 # m/s^2
+ps= 1e5   # Pa
+sigmaSB=5.67e-8
+
+esat<-function(tabs){
+	einf*exp(-L/(Rv*tabs)) # in Pa
+	}
+
+qsat<-function(tabs,p){
+ epsilon*esat(tabs)/p #p in Pa
+	} # in kg/kg
+	
+gamma_m<-function(tabs,p){
+		g*(1+qsat(tabs,p)*L/(Rd*tabs))/( Cp+qsat(tabs,p)*L^2/(Rv*tabs^2) )
+		}
+gamma_qv<-function(tabs,p){
+		L*gamma_m(tabs,p)/(Rv*tabs^2)-g/(Rd*tabs) 		
+		}
+
+# Theta_e computation
+mix_ratio<-function(q){
+		q/(1-q)
+		}
+rho<-function(q,p,tabs){
+	p/( (1-q)*(Rd*tabs+q/(1-q)*Rv*tabs) )
+	}
+e<-function(q,p){
+	q*p/epsilon
+	}
+RH<-function(q,p,tabs){
+	e(q,p)/esat(tabs)
+	}
+thetae<-function(q,p,tabs,p0=1e5){
+	pd = p-e(q,p)
+	tabs*(p0/pd)^(Rd/Cp)*RH(q,p,tabs)^(-Rv*q/(1-q)/Cp)*
+		exp(L0*q/(1-q)/(Cp*tabs)) 
+	}
