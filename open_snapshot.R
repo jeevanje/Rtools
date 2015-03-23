@@ -4,7 +4,10 @@
 # dimensions       #
 ####################
 
-source("~/domain/Rtools/calculus_tools.R")
+# Set this variable for each clone of Rtools!
+projectdir = "~/Dropbox/buoyancy2/"
+
+source(paste(projectdir,"Rtools/calculus_tools.R",sep=""))
 open.ncdf(snpshtpath)->snpsht_nc
 
 get.var.ncdf(snpsht_nc,"x")->x

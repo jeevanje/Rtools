@@ -6,17 +6,20 @@
 # computations     # 
 ####################
 
-L = 2.5e6   # J/kg
-L0= 2.555e6 # J/kg, see Bryan (2008)
-Rv = 461.5  # J/kg/K
-Rd = 287    # J/kg/K
+L = 2.5e6      # J/kg
+L0= 2.555e6    # J/kg, see Bryan (2008)
+Rv = 461.5     # J/kg/K
+Rd = 287       # J/kg/K
 epsilon = Rd/Rv
-Cp = 1004   # J/kg/K
+Cp = 1004      # J/kg/K
 einf = 2.53e11 # Pa
-g = 9.8 # m/s^2
-ps= 1e5   # Pa
+g = 9.81       # m/s^2, consistent with DAM
+ps= 1e5        # Pa
 sigmaSB=5.67e-8
 
+#==================#
+# Basic quantities #
+#==================#
 esat<-function(tabs){
 	einf*exp(-L/(Rv*tabs)) # in Pa
 	}
@@ -32,7 +35,9 @@ gamma_qv<-function(tabs,p){
 		L*gamma_m(tabs,p)/(Rv*tabs^2)-g/(Rd*tabs) 		
 		}
 
-# Theta_e computation
+#======================#
+# Theta_e computation  #
+#======================#
 mix_ratio<-function(q){
 		q/(1-q)
 		}
@@ -50,3 +55,22 @@ thetae<-function(q,p,tabs,p0=1e5){
 	tabs*(p0/pd)^(Rd/Cp)*RH(q,p,tabs)^(-Rv*q/(1-q)/Cp)*
 		exp(L0*q/(1-q)/(Cp*tabs)) 
 	}
+
+
+#===================#
+# Buoyancy function #
+#===================#
+# Construct buoyancy, refer to far-field values (not domain mean)
+# Only ingest 3D fields for now
+
+buoyancy <- function(rho){
+	 nx     = (dim(rho))[1]
+	 ny     = (dim(rho))[2]
+	 nz     = (dim(rho))[3]
+	 rhobar = rho[nx,ny,]   # far-field values
+	 buoy   = array(dim=c(nx,ny,nz))
+	 for (k in 1:nz){
+	     buoy[ , ,k]<- g*(rhobar[k]-rho[ , ,k])/rhobar[k]
+	     }
+	  buoy
+	  }
