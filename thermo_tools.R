@@ -38,6 +38,10 @@ gamma_m<-function(tabs,p){
 gamma_qv<-function(tabs,p){
 		L*gamma_m(tabs,p)/(Rv*tabs^2)-g/(Rd*tabs) 		
 		}
+theta_calc <-function(tabs,p){
+      tabs*(ps/p)^(Rd/Cp)
+      }
+
 
 #======================#
 # Theta_e computation  #

@@ -521,7 +521,7 @@
           # Ditto for Neumann BCs as per my notes, 4/30/14
           else if (bc == "n") {
              A[1,1] = -A[1,2]
-             A[nz.nz] = -A[nz,nz-1]
+             A[nz,nz] = -A[nz,nz-1]
          }
       }
 
