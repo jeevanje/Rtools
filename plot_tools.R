@@ -318,23 +318,22 @@ plot_p_profile<-function(x,xlab,main,xlim,color,zvec=1:nz){
 		 )
 	} 
 
-plot_tprofile<-function(x,xlab,main,xlim="NULL",color="NULL"){
-        length(x)->nz
+plot_tprofile<-function(x,xlab,main,xlim="NULL",color="NULL",zvec=1:nz){
         if (xlim == "NULL") {
-           xlim=rev(range(x))
+           xlim=range(x[zvec])
            }
         if (color == "NULL") {
            color="black"
            }
-        plot(rev(x),rev(tabs[1:nz]), ylab="Temperature [K]",
-	     main= main, type ="l",
+        plot(x[zvec],tabs[zvec], ylab="Temperature [K]",
+	         main= main, type ="l",
                  cex.axis = 1.35,
                  cex.lab = 1.5,
                  cex.main = 1.5,
                  lwd  = 2, 
                  xlab = xlab,
                  xlim = xlim,
-		       ylim = rev(range(tabs[1:nz])),
+		 ylim = rev(range(tabs[zvec])),
                  col = color
                  )
         }
