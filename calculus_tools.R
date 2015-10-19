@@ -133,6 +133,25 @@
 
     # p=Coordinate rank, coord=coordinate vector, f=3d field
 
+ # Quickly do 1D calculation
+    if (length(f) == length(coord)) {
+       nz = length(coord)
+       s2i<-numeric(length(coord))
+
+       zhalo = c( -coord[1],coord, 2*coord[nz]-coord[nz-1] )
+
+       # Construct fhalo in z-direction with f = 0 on bottom boundary
+       fhalo<-numeric(nz+2)
+       fhalo[2:(nz+1)] = f[1:nz]
+       fhalo[1] = -f[1]
+    
+       # Compute s2i
+       for (k in 1:nz) {
+                s2i[k] = 1/2*(fhalo[k+1]+fhalo[k])
+		}
+       return(s2i)
+       }  # if 1D
+
     # Get dimension sizes
     nx = dim(f)[1]
     ny = dim(f)[2]
