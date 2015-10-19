@@ -27,6 +27,28 @@
 
     # p=Coordinate rank, coord=coordinate vector, f=3d field
 
+    # Quickly do 1D calculation
+    if (length(f) == length(coord)) {
+       nz = length(coord)
+       i2s<-numeric(length(coord))
+       # Initialize  zhalo
+       zhalo = c( -coord[1],coord, 2*coord[nz]-coord[nz-1] )
+
+       # Construct fhalo in z-direction with f = 0 on bottom boundary
+       fhalo<-numeric(nz+2)
+       fhalo[2:(nz+1)] = f[1:nz]
+       fhalo[nz+2] = 0
+    
+       # Compute i2s
+       for (k in 1:nz) {
+ 			i2s[k] = 1/(zhalo[k+2]-zhalo[k])*
+			   ( fhalo[k+1]*(zhalo[k+2]-zhalo[k+1]) + 
+			     fhalo[k+2]*(zhalo[k+1]-zhalo[k] ) )      
+          }   # k  
+       return(i2s)
+       }  # if 1D
+
+
     # Get dimension sizes
     nx = dim(f)[1]
     ny = dim(f)[2]

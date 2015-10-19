@@ -279,15 +279,15 @@ plot_xdist<-function(y,ylab, main){
 		 )
 	} 
 
-plot_zprofile<-function(x,xlab,main,xlim="NULL",color="NULL"){
+plot_zprofile<-function(x,xlab,main,xlim="NULL",color="NULL",zvec=1:nz){
 	length(x)->nz
 	if (xlim == "NULL") {
-	   xlim=c(min(x),max(x))
+	   xlim=range(x[zvec])
 	   }
 	if (color == "NULL") {
 	   color="black"
 	   }
-	plot(x,1e-3*z[1:nz], ylab="z (km)",main= main, type ="l",
+	plot(x[zvec],1e-3*z[zvec], ylab="z (km)",main= main, type ="l",
 		 cex.axis = 1.35,
 		 cex.lab = 1.5,
 		 cex.main = 1.5,
