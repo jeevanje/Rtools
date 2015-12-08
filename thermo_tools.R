@@ -16,7 +16,7 @@ einf = 2.53e11 # Pa
 g = 9.81       # m/s^2, consistent with DAM
 ps= 1e5        # Pa
 sigmaSB=5.67e-8
-h = 6.6e-34    # Js
+h = 6.626e-34    # Js
 c = 3e8        # m/s
 k_b = 1.38e-23 # J/K
 
@@ -88,9 +88,18 @@ buoyancy <- function(rho){
 #==================#
 
 planck_lambda = function(T,lambda){
-	      return(pi* 2*h*c^2/lambda^5/(exp(h*c/(lambda*k_b*T))-1) )
-	      }   # W/m^3 (integrated over angles)
+		return(2*h*c^2/lambda^5/(exp(h*c/(lambda*k_b*T))-1) )
+	  	}   # W/m^2/sr/m
 
-planck_nu = function(T,nu){
-	      return(pi* 2*h*nu^3/c^2/(exp(h*nu/(k_b*T))-1) )
-	      }   # W/m^3 (integrated over angles)
+planck_nu     = function(T,nu){
+	      	return(2*h*nu^3/c^2/(exp(h*nu/(k_b*T))-1) )
+	      	}   # W/m^2/sr/Hz 
+
+# wavenumber k = 1/lambda
+planck_k      = function(T,k){
+	      	return(2*h*c^2*k^3/(exp(h*c*k/(k_b*T))-1) )
+		}   # W/m^2/sr/m^-1 
+
+B	      = function(T){
+	      	return(sigmaSB*T^4)
+		}	      
