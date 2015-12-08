@@ -88,9 +88,9 @@ buoyancy <- function(rho){
 #==================#
 
 planck_lambda = function(T,lambda){
-	      return(pi* 2*h*c^2/lambda^5/(exp(h*c/(lambda*k_b*T))-1) )
-	      }   # W/m^3 (integrated over angles)
+	      return(2*h*c^2/lambda^5/(exp(h*c/(lambda*k_b*T))-1) )
+	      }   # W/m^2/sr/m^-1
 
 planck_nu = function(T,nu){
-	      return(pi* 2*h*nu^3/c^2/(exp(h*nu/(k_b*T))-1) )
-	      }   # W/m^3 (integrated over angles)
+	      return(2*h*nu^3/c^2/(exp(h*nu/(k_b*T))-1) )
+	      }   # W/m^2/sr/m^-1 
