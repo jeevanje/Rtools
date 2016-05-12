@@ -8,7 +8,7 @@ png1x2<-function(filename) {
 	par(mfrow=c(1,2), mar=c(5,6,4,7), oma=c(0.5,0.5,0.5,3))
 }
 pdf1x1<-function(filename) {
-        pdf(filename,width=8,height=6)
+        pdf(filename,width=8,height=6,bg="white")
 	par(mar=c(5,6,4,7), oma=c(0.5,0.5,0.5,1))
 }
 
