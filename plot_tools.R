@@ -16,6 +16,10 @@ pdf1x2<-function(filename) {
         pdf(filename,width=10,height=4)
 	par(mfrow=c(1,2), mar=c(5,6,4,7), oma=c(0.5,0.5,0.5,3))
 }
+pdf1x3<-function(filename) {
+        pdf(filename,width=12,height=4)
+	par(mfrow=c(1,3), mar=c(5,6,4,7), oma=c(0.5,0.5,0.5,3))
+}
 pdf2x1<-function(filename) {
         pdf(filename,width=8,height=8)
 	par(mfrow=c(2,1), mar=c(5,5,5,7), oma=c(0.5,0.5,0.5,3))
@@ -157,7 +161,7 @@ plot_p_profile<-function(x,xlab,main,xlim,color,zvec=1:nz){
 	} 
 
 plot_tprofile<-function(x,xlab,main,xlim="NULL",ylim="NULL",log="",
-			color="NULL",zvec=1:nz){
+			color="NULL",zvec=1:nz,lty="solid"){
         if (xlim == "NULL") {
            xlim=range(x[zvec])
            }
@@ -169,15 +173,16 @@ plot_tprofile<-function(x,xlab,main,xlim="NULL",ylim="NULL",log="",
            }
         plot(x[zvec],tabs[zvec], ylab="Temperature [K]",
 	         main= main, type ="l",
-		 log = log,
+		 		 log = log,
                  cex.axis = 1.35,
                  cex.lab = 1.5,
                  cex.main = 1.5,
                  lwd  = 2, 
                  xlab = xlab,
                  xlim = xlim,
-		 ylim = ylim,
-                 col = color
+		 		 ylim = ylim,
+                 col = color,
+                 lty=lty
                  )
         }
 

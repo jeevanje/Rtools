@@ -3,7 +3,7 @@
 # plus my comments and mods   #
 # 12/15                       #
 #                             #
-# Follows original image.plot #s
+# Follows original image.plot #
 # code as found at URL below  #
 #=============================#
 
@@ -24,12 +24,13 @@ my.image.plot <- function(x,y,z,...,
     horizontal = FALSE, 
     legend.shrink = 0.9, 
     legend.width = 1.2, 
-    legend.mar = ifelse(horizontal, 3.1, 5.1), # set legend margin for 												   					horizontal or vertical legend
+    legend.mar = ifelse(horizontal, 3.1, 5.1), # set legend margin for 												   			       # horizontal or vertical legend
     legend.lab = NULL, 
     graphics.reset = FALSE, 
     bigplot = NULL,   # Plotting region coords for image 
     smallplot = NULL, # plotting region coords for legend
     legend.only = FALSE, 
+    add.legend  = TRUE,
     col = tim.colors(nlevel), lab.breaks = NULL, axis.args = NULL, legend.args = NULL, 
     font.main = 2, 
     midpoint = FALSE, 
@@ -43,7 +44,7 @@ my.image.plot <- function(x,y,z,...,
     info <- imageplot.info(x,y,z)   # returns xlim,ylim,zlim
     if (add) {
         big.plot <- old.par$plt  # Keep old coordinates of image region 
-		    		    		 # as fraction of figure region (for adding legend)
+		    		 # as fraction of figure region (for adding legend)
     }
     if (legend.only) {
         graphics.reset <- TRUE
@@ -54,16 +55,17 @@ my.image.plot <- function(x,y,z,...,
     # temp produces $smallplot, $bigplot, plotting regions for image and legend
     smallplot <- temp$smallplot
     bigplot <- temp$bigplot
+
+
+    #=======================#
+    # Plot image, no legend #
+	#=======================#
     if (!legend.only) {
-        if (!add) {
-            par(plt = bigplot)			   # Get size of image region
+        if (!add & add.legend) {
+            par(plt = bigplot)			   # Set size of image region
         }
 
-        #=======================#
-        # Plot image, no legend #
-		#=======================#
-
- 		# plot image-only as png, save as temp.png
+	 	# plot image-only as png, save as temp.png
         library(png)
         png('temp.png')  # deleted 'cairo' type -- doesn't work!
         par(xaxs='i',yaxs='i',mar=c(0,0,0,0))  # Style for axis finding, no margin
@@ -78,10 +80,17 @@ my.image.plot <- function(x,y,z,...,
         rasterImage(readPNG('temp.png'),min(x),min(y),max(x),max(y))
         big.par <- par(no.readonly = TRUE)
     }
+    if (!add.legend){ 
+       return()
+       }
     if ((smallplot[2] < smallplot[1]) | (smallplot[4] < smallplot[3])) {
         par(old.par)
         stop("plot region too small to add legend\n")
     }
+
+    #===========================#
+    # Begin legend construction #
+    #===========================#
     ix <- 1
 	minz <- zlim[1]
 	maxz <- zlim[2]

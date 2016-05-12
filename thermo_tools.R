@@ -97,9 +97,16 @@ planck_nu     = function(T,nu){
 
 # wavenumber k = 1/lambda
 planck_k      = function(T,k){
-	      	return(2*h*c^2*k^3/(exp(h*c*k/(k_b*T))-1) )
-		}   # W/m^2/sr/m^-1 
+	      						return(2*h*c^2*k^3/(exp(h*c*k/(k_b*T))-1) )
+								# W/m^2/sr/m^-1 
+				}   
 
-B	      = function(T){
+B	      	  = function(T){
 	      	return(sigmaSB*T^4)
-		}	      
+		}	 
+		
+planck_k_linear = function(T,k){
+	      			return(2*k_b*c*k^2*T)
+								# W/m^2/sr/m^-1 
+				}   
+		     
