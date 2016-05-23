@@ -5,7 +5,7 @@
 # fluxes         #
 #================#
 
-Rtoolsdir = "~/aggregation/Rtools"
+Rtoolsdir = "~/Dropbox/Rtools"
 source(paste(Rtoolsdir,"/calculus_tools.R",sep=""))
 source(paste(Rtoolsdir,"/thermo_tools.R",sep=""))
 

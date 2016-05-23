@@ -109,4 +109,12 @@ planck_k_linear = function(T,k){
 	      			return(2*k_b*c*k^2*T)
 								# W/m^2/sr/m^-1 
 				}   
-		     
+
+planck_k_interval = function(T,k1,k2){
+					kintvals = 1e2*((1e-2*k1):(1e-2*k2))  # dk = 1 cm^-1, int vals
+#					kintvals = seq(k1,k2,length.out=1e5)
+					n_kint 	 = length(kintvals)
+		     		kvals	 = (kintvals[1:(n_kint-1)] + kintvals[2:n_kint])/2
+					dkvec	 = diff(kintvals)
+					return(pi*planck_k(T,kvals)%*%dkvec)  # W/m^2
+}		     
