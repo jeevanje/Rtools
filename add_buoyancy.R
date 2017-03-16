@@ -20,10 +20,10 @@ vars[['B']]$units    <- 'm/s^2'
 vars[['B']]$data     <- B
 
 dims = nc[[8]]
-tdim = dims[[1]]
-xdim = dims[[3]]
-ydim = dims[[2]]
-zdim = dims[[4]]
+xdim = dims[["x"]]
+ydim = dims[["y"]]
+zdim = dims[["z"]]
+tdim = dims[["time"]]
    
 # Make vardef (general, to include RH later)
 vardef <- list()
