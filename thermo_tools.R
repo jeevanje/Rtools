@@ -42,6 +42,13 @@ theta_func <-function(tabs,p){
       tabs*(ps/p)^(Rd/Cp)
       }
 
+k2f <- function(tabs){
+		return((tabs - 273.15)*9/5 +32)
+}
+
+k2c <- function(tabs){
+		return(tabs - 273.15)
+}
 
 #======================#
 # Theta_e computation  #

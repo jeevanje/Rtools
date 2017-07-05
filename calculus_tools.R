@@ -9,10 +9,25 @@
       nz=length(z)
       zint<-numeric()
       zint[1]=0
-      for (k in 2:nz) {
-      	  zint[k] = 1/2*(z[k]+z[k-1])
-	  }
-      zint
+	  zint[2:nz] = 0.5*(z[-1]+z[-nz])
+      return(zint)
+      }
+
+  #================================#
+  # Function pinterp               #
+  #                                #
+  # Produces interface values of   #
+  # p from scalar values           # 
+  #================================#
+
+  pinterp<-function(p){
+	  # Assumes p increasing with k
+      np=length(p)
+      lnp = log(p)
+      lnp_int<-numeric(np)
+	  lnp_int[-np] = 0.5*(lnp[-1]+lnp[-np])
+	  lnp_int[np] = 1.5*lnp[np] - 0.5*lnp[np-1]
+      return(exp(lnp_int))
       }
 
   #================================#
