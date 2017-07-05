@@ -38,10 +38,17 @@ gamma_m<-function(tabs,p){
 gamma_qv<-function(tabs,p){
 		L*gamma_m(tabs,p)/(Rv*tabs^2)-g/(Rd*tabs) 		
 		}
-theta_calc <-function(tabs,p){
+theta_func <-function(tabs,p){
       tabs*(ps/p)^(Rd/Cp)
       }
 
+k2f <- function(tabs){
+		return((tabs - 273.15)*9/5 +32)
+}
+
+k2c <- function(tabs){
+		return(tabs - 273.15)
+}
 
 #======================#
 # Theta_e computation  #
@@ -49,39 +56,66 @@ theta_calc <-function(tabs,p){
 mix_ratio<-function(q){
 		q/(1-q)
 		}
-rho<-function(q,p,tabs){
+rho_func<-function(q,p,tabs){
 	p/( (1-q)*(Rd*tabs+q/(1-q)*Rv*tabs) )
 	}
 e<-function(q,p){
 	q*p/epsilon
 	}
-RH<-function(q,p,tabs){
+RH_func<-function(q,p,tabs){
 	e(q,p)/esat(tabs)
 	}
-thetae<-function(q,p,tabs,p0=1e5){
+thetae_func<-function(q,p,tabs,p0=1e5){
 	pd = p-e(q,p)
-	tabs*(p0/pd)^(Rd/Cp)*RH(q,p,tabs)^(-Rv*q/(1-q)/Cp)*
+	tabs*(p0/pd)^(Rd/Cp)*RH_func(q,p,tabs)^(-Rv*q/(1-q)/Cp)*
 		exp(L0*q/(1-q)/(Cp*tabs)) 
 	}
 
 
-#===================#
-# Buoyancy function #
-#===================#
-# Construct buoyancy, refer to far-field values (not domain mean)
-# Only ingest 3D fields for now
+#====================#
+# Buoyancy functions #
+#====================#
 
-buoyancy <- function(rho){
-	 nx     = (dim(rho))[1]
-	 ny     = (dim(rho))[2]
-	 nz     = (dim(rho))[3]
-	 rhobar = rho[nx,ny,]   # far-field values
-	 buoy   = array(dim=c(nx,ny,nz))
+buoyancy3d <- function(rho3d,far_field=TRUE){
+	 nx     = (dim(rho3d))[1]
+	 ny     = (dim(rho3d))[2]
+	 nz     = (dim(rho3d))[3]
+	 B3d   = array(dim=c(nx,ny,nz))
+	 # compute reference density rhobar 
+	 if (far_field){
+	    rhobar = rho3d[nx,ny,]       # far-field values
+	    } else {
+	    rhobar = apply(rho3d,3,mean) # domain-mean
+	    }
+	 # compute B
 	 for (k in 1:nz){
-	     buoy[ , ,k]<- g*(rhobar[k]-rho[ , ,k])/rhobar[k]
+	     B3d[ , ,k]<- g*(rhobar[k]-rho3d[ , ,k])/rhobar[k]
 	     }
-	  buoy
+	  return(B3d)
 	  }
+
+buoyancy4d <- function(rho4d,far_field=TRUE){
+	   nx = (dim(rho4d))[1]
+	   ny = (dim(rho4d))[2]
+	   nz = (dim(rho4d))[3]
+	   nt = (dim(rho4d))[4]
+     	   B4d   = array(dim=c(nx,ny,nz,nt))	   
+	   for (l in 1:nt){
+	       B4d[ , , ,l] = buoyancy3d(rho4d[ , , ,l],far_field)
+	       }
+	    return(B4d)
+	    }
+	       
+buoyancy_func <- function(rho,far_field=TRUE){
+	      	 if (length(dim(rho)) == 4){
+		    return(buoyancy4d(rho,far_field))
+		    } else if (length(dim(rho)) == 3) {
+		    return(buoyancy3d(rho,far_field))
+		    } else {
+		    print("dim(rho) not 3 or 4. Exit.")
+		    stop
+		    }
+		 }
 
 #==================#
 # Planck functions #
