@@ -19,7 +19,7 @@ sigmaSB=5.67e-8
 h = 6.626e-34    # Js
 c = 3e8        # m/s
 k_b = 1.38e-23 # J/K
-
+N_avo = 6.022e23 
 
 #==================#
 # Basic quantities #

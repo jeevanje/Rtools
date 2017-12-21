@@ -9,7 +9,7 @@
       nz=length(z)
       zint<-numeric()
       zint[1]=0
-	  zint[2:nz] = 0.5*(z[-1]+z[-nz])
+      zint[2:nz] = 0.5*(z[-1]+z[-nz])
       return(zint)
       }
 
@@ -21,12 +21,12 @@
   #================================#
 
   pinterp<-function(p){
-	  # Assumes p increasing with k
+      # Assumes p increasing with k
       np=length(p)
       lnp = log(p)
       lnp_int<-numeric(np)
-	  lnp_int[-np] = 0.5*(lnp[-1]+lnp[-np])
-	  lnp_int[np] = 1.5*lnp[np] - 0.5*lnp[np-1]
+      lnp_int[-np] = 0.5*(lnp[-1]+lnp[-np])
+      lnp_int[np] = 1.5*lnp[np] - 0.5*lnp[np-1]
       return(exp(lnp_int))
       }
 
@@ -38,9 +38,9 @@
   # with Dirichlet BCs             #
   #================================#
 
-  i2s<-function(p,coord,f){
+  i2s<-function(p,coord,f,ftop=0){
 
-    # p=Coordinate rank, coord=coordinate vector, f=3d field
+    # p=Coordinate rank, coord=coordinate vector, f=3d or 1d field
 
     # Quickly do 1D calculation
     if (length(f) == length(coord)) {
@@ -49,7 +49,7 @@
        # Initialize  zhalo
        zhalo = c( -coord[1],coord, 2*coord[nz]-coord[nz-1] )
 
-       # Construct fhalo in z-direction with f = 0 on bottom boundary
+       # Construct fhalo in z-direction with f = 0 on top boundary
        fhalo<-numeric(nz+2)
        fhalo[2:(nz+1)] = f[1:nz]
        fhalo[nz+2] = 0
@@ -144,26 +144,16 @@
   # with Dirichlet BCs             #
   #================================#
 
-  s2i<-function(p,coord,f){
+  s2i<-function(p,coord,f,f0 = 0){
 
-    # p=Coordinate rank, coord=coordinate vector, f=3d field
+  # p=Coordinate rank, coord=coordinate vector, f=3d field
 
  # Quickly do 1D calculation
     if (length(f) == length(coord)) {
        nz = length(coord)
        s2i<-numeric(length(coord))
-
-       zhalo = c( -coord[1],coord, 2*coord[nz]-coord[nz-1] )
-
-       # Construct fhalo in z-direction with f = 0 on bottom boundary
-       fhalo<-numeric(nz+2)
-       fhalo[2:(nz+1)] = f[1:nz]
-       fhalo[1] = -f[1]
-    
-       # Compute s2i
-       for (k in 1:nz) {
-                s2i[k] = 1/2*(fhalo[k+1]+fhalo[k])
-		}
+       s2i[2:nz] = 1/2*(f[-1] + f[-nz])
+       s2i[1]    = f0
        return(s2i)
        }  # if 1D
 
@@ -213,10 +203,10 @@
 
     } else if (p == 3) {        # ppiz
 
-       # Construct fhalo in z-direction with f = 0 on bottom boundary
+       # Construct fhalo in z-direction with f = f0 on bottom boundary
        fhalo<-array(dim=c(nx,ny,nz+2))
        fhalo[ , ,2:(nz+1)] = f
-       fhalo[ , ,1] = -fhalo[ , ,2]
+       fhalo[ , ,1] = -fhalo[ , ,2] + 2*f0
     
        # Compute s2i
        for (i in 1:nx) {
@@ -227,7 +217,7 @@
           }     
        }
     }
-    s2i
+    return(s2i)
 }
 
   #================================#
