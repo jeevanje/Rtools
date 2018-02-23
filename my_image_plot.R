@@ -8,6 +8,7 @@
 #=============================#
 
 #http://www.image.ucar.edu/~nychka/Fields/Source/image.plot.R
+library(fields)
 
 my.image.plot <- function(x,y,z,...,				
 	main = "",
@@ -24,14 +25,18 @@ my.image.plot <- function(x,y,z,...,
     horizontal = FALSE, 
     legend.shrink = 0.9, 
     legend.width = 1.2, 
-    legend.mar = ifelse(horizontal, 3.1, 5.1), # set legend margin for 												   			       # horizontal or vertical legend
+    legend.mar = ifelse(horizontal, 3.1, 5.1), # set legend margin for
+					       # horizontal or vertical legend
     legend.lab = NULL, 
     graphics.reset = FALSE, 
     bigplot = NULL,   # Plotting region coords for image 
     smallplot = NULL, # plotting region coords for legend
     legend.only = FALSE, 
     add.legend  = TRUE,
-    col = tim.colors(nlevel), lab.breaks = NULL, axis.args = NULL, legend.args = NULL, 
+    col = tim.colors(nlevel), 
+    lab.breaks = NULL, 
+    axis.args = NULL, 
+    legend.args = NULL, 
     font.main = 2, 
     midpoint = FALSE, 
     border = NA, lwd = 1) {

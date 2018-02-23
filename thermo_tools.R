@@ -6,20 +6,22 @@
 # computations     # 
 ####################
 
-L = 2.5e6      # J/kg
-L0= 2.555e6    # J/kg, see Bryan (2008)
-Rv = 461.5     # J/kg/K
-Rd = 287       # J/kg/K
+L     = 2.5e6      # J/kg
+L0    = 2.555e6    # J/kg, see Bryan (2008)
+Rv    = 461.5      # J/kg/K
+Rd    = 287        # J/kg/K
 epsilon = Rd/Rv
-Cp = 1004      # J/kg/K
-einf = 2.53e11 # Pa
-g = 9.81       # m/s^2, consistent with DAM
-ps= 1e5        # Pa
+Cp    = 1004       # J/kg/K
+einf  = 2.53e11 # Pa
+g     = 9.81       # m/s^2, consistent with DAM
+ps    = 1e5        # Pa
 sigmaSB=5.67e-8
-h = 6.626e-34    # Js
-c = 3e8        # m/s
-k_b = 1.38e-23 # J/K
+h     = 6.626e-34    # Js
+c     = 3e8        # m/s
+k_b   = 1.38e-23   # J/K
 N_avo = 6.022e23 
+m_air = 28.971     # molar mass
+m_co2 = 44
 
 #==================#
 # Basic quantities #

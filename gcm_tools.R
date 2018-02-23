@@ -3,6 +3,8 @@
 # analysis      #
 #===============#
 
+source("~/Dropbox/Rtools/my_image_plot.R")
+
 global_mean = function(lon,lat,field){
 		# assumes lat/lon in degrees!
 		lat_rad  = pi/180*lat
@@ -29,14 +31,15 @@ global_mean = function(lon,lat,field){
 		}
 
 plot_map <- function(lon,lat,field,main,zlim=range(field),
-			do_mean = TRUE, units = NULL,cex = 1.15){
-            image.plot(lon,lat,field,zlim=zlim,
+			do_mean = TRUE, units = NULL,cex = 1.15,cex_leg = 1.15){
+            my.image.plot(lon,lat,field,zlim=zlim,
                         xlab = "Longitude (deg)",
 			ylab = "Latitude (deg)", 
                         main = main,
 			cex.lab = cex,
 			cex.main = cex,
-			cex.axis = cex)
+			cex.axis = cex,
+			cex.legend  = cex_leg )
             map("world2",add=TRUE,interior=FALSE)
             title("")
             mean = global_mean(lon,lat,field)
