@@ -20,15 +20,19 @@
   # p from scalar values           # 
   #================================#
 
-  pinterp<-function(p){
-      # Assumes p increasing with k
+  pinterp<-function(p,pm){
       np=length(p)
       lnp = log(p)
       lnp_int<-numeric(np)
-      lnp_int[-np] = 0.5*(lnp[-1]+lnp[-np])
-      lnp_int[np] = 1.5*lnp[np] - 0.5*lnp[np-1]
-      return(exp(lnp_int))
+      if (pm == "+") {   # p increasing with k
+         lnp_int[-np] = 0.5*(lnp[-1]+lnp[-np])
+	 lnp_int[np] = 1.5*lnp[np] - 0.5*lnp[np-1]
+      } else if (pm == "-"){
+         lnp_int[2:np] = 0.5*(lnp[-1]+lnp[-np])
+	 lnp_int[1]    = 1.5*lnp[1] - 0.5*lnp[2]
       }
+      return(exp(lnp_int))
+  }
 
   #================================#
   # Function i2s                   #

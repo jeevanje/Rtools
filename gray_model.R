@@ -5,7 +5,7 @@
 # fluxes         #
 #================#
 
-Rtoolsdir = "~/Dropbox/Rtools"
+Rtoolsdir = "~/rad_cooling2/Rtools"
 source(paste(Rtoolsdir,"/calculus_tools.R",sep=""))
 source(paste(Rtoolsdir,"/thermo_tools.R",sep=""))
 
@@ -38,30 +38,32 @@ compute_trans = function(tau){
 # Radiative transfer #
 #====================#
 
-compute_Ugray = function(tau,tabs,Ts=tabs[1]){
-	    # tau ssi, tabs sss
+compute_Ugray = function(tau,Bvals,Bs=Bvals[1]){
+	    # tau ssi, Bvals sss
 	    ntau  = length(tau)
 	    dtau  = diff(c(tau,0))
-	    Ugray = numeric(ntau)
-		Ugray[1] = B(Ts)
-		for (i in 1:(ntau-1)){
-		    # see rad_cooling notes 10/17
-		    Ugray[i+1] = ( (1+dtau[i]/2)*Ugray[i] -dtau[i]*B(tabs[i]) ) /(1-dtau[i]/2)
-		    }
-		 return(Ugray)
+	    Ugray = numeric(ntau+1)  #i levels + 1!
+   	    Ugray[1] = Bs
+            for (i in 1:(ntau)){
+      	       # see rad_cooling notes 10/17
+	       Ugray[i+1] = ( (1+dtau[i]/2)*Ugray[i] -dtau[i]*Bvals[i] ) /(1-dtau[i]/2)
+            }
+            dim(Ugray) <- ntau+1		    
+            return(Ugray)  
 	}
 
-compute_Dgray = function(tau,tabs){
-	    # tau ssi, tabs sss
+compute_Dgray = function(tau,Bvals){
+	    # tau ssi, Bvals sss
 	    ntau  = length(tau)
 	    dtau  = diff(c(tau,0))
-	    Dgray = numeric(ntau)
-		Dgray[ntau] = 0  # neglect emission from topmost grid cell
-		for (i in (ntau-1):1){
-		    # see rad_cooling notes 10/17
-		    Dgray[i] = ( (1+dtau[i]/2)*Dgray[i+1] -dtau[i]*B(tabs[i]) ) /(1 - dtau[i]/2)
-		    }
-		 return(Dgray)
+	    Dgray = numeric(ntau+1)  # i levels + 1!
+	    Dgray[ntau+1] = 0  # neglect emission from above topmost grid cell
+	    for (i in (ntau):1){
+		# see rad_cooling notes 10/17
+		Dgray[i] = ( (1+dtau[i]/2)*Dgray[i+1] -dtau[i]*Bvals[i] ) /(1 - dtau[i]/2)
+		}
+	    dim(Dgray) <- ntau+1	
+            return(Dgray)  
 	}
 
 #===============#
@@ -70,44 +72,48 @@ compute_Dgray = function(tau,tabs){
 
 compute_ex   = function(Bvals,tau){
 	       # tau ssi, Bvals sss	       
-		   epsilon=1e-10  # fudge for weird R bug in k_2tau
+   	       epsilon=1e-10  # fudge for weird R bug in k_2tau
 	       N     = length(tau)
-		   ex    = list()
-		   ex[['ax']] <- numeric(N)
-		   ex[['sx']] <- numeric(N)		   
+	       ex    = list()
+	       ex[['ax']] <- numeric(N)
+	       ex[['sx']] <- numeric(N)		   
 	       taus  = tau[1]
 	       tau_s = c(tau[-N] + diff(tau)/2,tau[N]+diff(tau)[N-1]/2)
 	       dtau  = -c(diff(tau),0) # slight fudge here
+	       Bvals_i = s2i(1,tau,Bvals,f0=Bvals[1]+0.5*diff(Bvals)[1])
 	       for (k in 1:N){   # k is s levels
  	       	   if (tau_s[k] < taus/2){
-				  # ax		
+
+		      # ax		
 	       	      k_2tau = max(which(tau>2*tau_s[k]))  # i level
-				  kvec   = 1:(k_2tau-1)  #s levs
+	   	      kvec   = 1:(k_2tau-1)  #s levs
 	       	      ax =  -sum(dtau[kvec]*(Bvals[kvec]-Bvals[k])*exp(-(tau_s[kvec]-tau_s[k])))
-				  ex[['ax']][k] <- ax
+		      ex[['ax']][k] <- ax
 				   
-				  # sx	
-				  kvec1  = (k+1):N
+	 	      # sx	
+		      kvec1  = (k+1):N
 	       	      sx1    = -sum(dtau[kvec1]*(Bvals[kvec1]-Bvals[k])*exp(-(tau_s[k]-tau_s[kvec1])))
-				  kvec2  = k_2tau:(k-1)	
-				  sx2	 = -sum(dtau[kvec2]*(Bvals[kvec2]-Bvals[k])*exp(-(tau_s[kvec2]-tau_s[k])))		       	      
-				  ex[['sx']][k]  <- sx1 + sx2
+		      kvec2  = k_2tau:(k-1)	
+		      sx2    = -sum(dtau[kvec2]*(Bvals[kvec2]-Bvals[k])*exp(-(tau_s[kvec2]-tau_s[k])))		       	      
+		      gamma  = log(Bvals_i[k+1]/Bvals_i[k])/log(tau[k+1]/tau[k])
+		      sx3    = dtau[k]/2*exp(-dtau[k]/4)*(Bvals_i[k]*(1-dtau[k]/4/tau[k])^gamma -2*Bvals_i[k]*(1-dtau[k]/2/tau[k])^gamma + Bvals_i[k+1]*(1+dtau[k]/4/tau[k+1])^gamma )
+ 		      ex[['sx']][k]  <- sx1 + sx2 + sx3
 				  	
-				} else if (tau_s[k]>=taus/2){
-				  # ax	
+		   } else if (tau_s[k]>=taus/2){
+		      # ax	
 	       	      k_2tau = min(which(tau <= (2*tau_s[k]-taus + epsilon)))  # i level
-				  kvec   = k_2tau:N  #s levs
+		      kvec   = k_2tau:N  #s levs
 	       	      ex[['ax']][k]  <- -sum(dtau[kvec]*(Bvals[kvec]-Bvals[k])*exp(-(tau_s[k]-tau_s[kvec])))
 	       	      
 	       	      # sx
-				  kvec1  = 1:(k-1)
+		      kvec1  = 1:(k-1)
 	       	      sx1    = -sum(dtau[kvec1]*(Bvals[kvec1]-Bvals[k])*exp(-(tau_s[kvec1]-tau_s[k])))
-				  kvec2  = (k+1):(k_2tau-1)	
-				  sx2	 = -sum(dtau[kvec2]*(Bvals[kvec2]-Bvals[k])*exp(-(tau_s[k]-tau_s[kvec2])))		       	      
-				  ex[['sx']][k]  <- sx1 + sx2
-				}		      
-			}   # k
-			return(ex)
+		      kvec2  = (k+1):(k_2tau-1)	
+		      sx2    = -sum(dtau[kvec2]*(Bvals[kvec2]-Bvals[k])*exp(-(tau_s[k]-tau_s[kvec2])))		       	      
+		      ex[['sx']][k]  <- sx1 + sx2
+  		   }  #tau_s[k] > taus/2 		      
+		}   # k
+		return(ex)
 }
 
  

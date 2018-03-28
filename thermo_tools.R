@@ -20,8 +20,9 @@ h     = 6.626e-34    # Js
 c     = 3e8        # m/s
 k_b   = 1.38e-23   # J/K
 N_avo = 6.022e23 
-m_air = 28.971     # molar mass
+m_air = 28.971     # molar mass, kg/mol
 m_co2 = 44
+m_h2o = 18
 
 #==================#
 # Basic quantities #
