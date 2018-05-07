@@ -6,6 +6,7 @@
 # computations     # 
 ####################
 
+source("~/edison/rad_cooling/Rtools/calculus_tools.R")
 L     = 2.5e6      # J/kg
 L0    = 2.555e6    # J/kg, see Bryan (2008)
 Rv    = 461.5      # J/kg/K
@@ -73,6 +74,23 @@ thetae_func<-function(q,p,tabs,p0=1e5){
 	tabs*(p0/pd)^(Rd/Cp)*RH_func(q,p,tabs)^(-Rv*q/(1-q)/Cp)*
 		exp(L0*q/(1-q)/(Cp*tabs)) 
 	}
+
+#=====#
+# WVP #
+#=====#
+
+compute_wvp   = function(z,rhov){
+            nz = length(z)
+            zint = zinterp(z)
+            dz   = diff(zint)  # length = nz-1
+            wvp  = array(dim=dim(rhov)[1:2])
+            wvp   = rhov[ , ,nz]*dz[nz-1]  # extrapolate dzvec
+            for (k in (nz-1):1){
+                 wvp = wvp + dz[k]*rhov[ , ,k]
+            }
+            return(wvp)
+}
+
 
 
 #====================#

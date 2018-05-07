@@ -14,18 +14,19 @@ source(paste(Rtoolsdir,"/thermo_tools.R",sep=""))
 # routines      #
 #===============#
 
-compute_wvp   = function(z,rhov){
+# WVP as a function of k, for tau calculation! 
+compute_wvp_k   = function(z,rhov){
 	    #ssi !
 	    nz = length(z)
-		zint = zinterp(z)
-		dz   = diff(zint)  # length = nz-1
-		wvp = numeric(nz)
-		wvp[nz] = rhov[nz]*dz[nz-1]  # extrapolate dzvec
-		for (k in (nz-1):1){
-                    wvp[k] = wvp[k+1] + dz[k]*rhov[k]
-		    } 
-		return(wvp)
-		}
+	    zint = zinterp(z)
+	    dz   = diff(zint)  # length = nz-1
+	    wvp  = numeric(nz)
+	    wvp[nz] = rhov[nz]*dz[nz-1]  # extrapolate dzvec
+	    for (k in (nz-1):1){
+                 wvp[k] = wvp[k+1] + dz[k]*rhov[k]
+            } 
+	    return(wvp)
+}
 
 compute_trans = function(tau){
 	        # All quantities ssi!
