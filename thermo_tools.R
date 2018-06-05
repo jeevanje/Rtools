@@ -6,7 +6,8 @@
 # computations     # 
 ####################
 
-source("~/edison/rad_cooling/Rtools/calculus_tools.R")
+
+source("~/Dropbox/Rtools/calculus_tools.R")
 L     = 2.5e6      # J/kg
 L0    = 2.555e6    # J/kg, see Bryan (2008)
 Rv    = 461.5      # J/kg/K
@@ -17,13 +18,13 @@ einf  = 2.53e11 # Pa
 g     = 9.81       # m/s^2, consistent with DAM
 ps    = 1e5        # Pa
 sigmaSB=5.67e-8
-h     = 6.626e-34    # Js
+h     = 6.626e-34  # Js
 c     = 3e8        # m/s
 k_b   = 1.38e-23   # J/K
 N_avo = 6.022e23 
-m_air = 28.971     # molar mass, kg/mol
-m_co2 = 44
-m_h2o = 18
+m_air = 28.971e-3  # molar mass, kg/mol
+m_co2 = 44e-3
+m_h2o = 18e-3
 
 #==================#
 # Basic quantities #
@@ -142,16 +143,16 @@ buoyancy_func <- function(rho,far_field=TRUE){
 # Planck functions #
 #==================#
 
-planck_lambda = function(T,lambda){
+planck_lambda = function(lambda,T){
 		return(2*h*c^2/lambda^5/(exp(h*c/(lambda*k_b*T))-1) )
 	  	}   # W/m^2/sr/m
 
-planck_nu     = function(T,nu){
+planck_nu     = function(nu,T){
 	      	return(2*h*nu^3/c^2/(exp(h*nu/(k_b*T))-1) )
 	      	}   # W/m^2/sr/Hz 
 
 # wavenumber k = 1/lambda
-planck_k      = function(T,k){
+planck_k      = function(k,T){
 	      						return(2*h*c^2*k^3/(exp(h*c*k/(k_b*T))-1) )
 								# W/m^2/sr/m^-1 
 				}   

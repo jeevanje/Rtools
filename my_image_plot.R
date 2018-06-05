@@ -12,10 +12,12 @@ library(fields)
 
 my.image.plot <- function(x,y,z,...,				
 	main = "",
+	xlim = range(x),
 	ylim = range(y),
 	zlim = range(z),
 	xlab = "",
 	ylab = "",
+	log  = "",
 	cex.lab = 1,
 	cex.axis = 1,
 	cex.main = 1,
@@ -64,7 +66,7 @@ my.image.plot <- function(x,y,z,...,
 
     #=======================#
     # Plot image, no legend #
-	#=======================#
+    #=======================#
     if (!legend.only) {
         if (!add & add.legend) {
             par(plt = bigplot)			   # Set size of image region
@@ -78,7 +80,7 @@ my.image.plot <- function(x,y,z,...,
         dev.off()
         # Plot axes, ticks, and labels for image
         image(x,y,array(NA,dim=c(length(x),length(y))),
-        	 xlab=xlab,ylab=ylab,main=main,ylim=ylim,
+        	 xlab=xlab,ylab=ylab,main=main,xlim=xlim,ylim=ylim,log=log,
         	 cex.lab=cex.lab,cex.axis = cex.axis, 
         	 cex.main=cex.main, font.main=font.main)
 		# Add image to above skeleton

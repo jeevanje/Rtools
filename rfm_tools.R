@@ -57,12 +57,42 @@ rfm_lni2s = function(f){   # assume native grid is interfacial,
 #========================#
 
 running_mean = function(x,nrun){
-	nx    = length(x)
-	xmean = 0
-	for (i in 1:(nrun)){
-	    xmean = xmean + x[i:(i+(nx-nrun))]
-	    }
-	xmean = xmean/nrun
-	return(xmean)   # length nx-nrun+1
+	if (length(dim(x))==1){
+		nx    = length(x)
+		xmean = 0
+		for (i in 1:(nrun)){
+		    xmean = xmean + x[i:(i+(nx-nrun))]
+		    }
+		xmean = xmean/nrun
+		return(xmean)   # length nx-nrun+1
+	} else if (length(dim(x))==2){
+		nx    = dim(x)[1]
+		xmean = 0
+		for (i in 1:(nrun)){
+		    xmean = xmean + x[i:(i+(nx-nrun)),]
+		}
+		xmean = xmean/nrun
+		return(xmean)   # length nx-nrun+1
+	}
+}
+
+#========================#
+# Function coarse_grain  #
+#                        #
+# Coarse-grains input by #
+# a factor n             #
+#========================#
+
+coarse_grain = function(x,n){
+				   nx      = dim(x)[1]
+				   xmean   = running_mean(x,n)
+				   ivec    = n*(0:(nx/n -1)) + 1	
+		
+				   if (length(dim(x))==1){
+					   xcoarse = xmean[ivec]
+					} else if (length(dim(x))==2){
+					   xcoarse = xmean[ivec,]
+					}
+					return(xcoarse)
 }
 
