@@ -6,8 +6,9 @@
 # computations     # 
 ####################
 
+Rtools_dir = "~/Rtools/"
+source(paste(Rtools_dir,"calculus_tools.R",sep=""))
 
-source("~/Dropbox/Rtools/calculus_tools.R")
 L     = 2.5e6      # J/kg
 L0    = 2.555e6    # J/kg, see Bryan (2008)
 Rv    = 461.5      # J/kg/K
