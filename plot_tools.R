@@ -1,8 +1,22 @@
+#---------------------#
+# Plot parameters     #
+#---------------------#
 
+# axis labels
+zlab	 = "Height (km)"
+plab     = "Pressure (hPa)"
+tabslab  = "Temperature (K)"
+klab     = expression(k~~"("*c*m^{-1}*")")
+lntaulab = expression(ln~tau)
+kappalab = expression(kappa~~"("*m^{2}/kg*")")
+
+# axis limits
+plim   = c(1000,0)
 
 #---------------------------#
 # Plot set-up functions     #
 #---------------------------#
+
 png1x2<-function(filename) {
         png(paste(filename,".png",sep=""),width=12,height=5,units="in",res=72)
 	par(mfrow=c(1,2), mar=c(5,6,4,7), oma=c(0.5,0.5,0.5,3))

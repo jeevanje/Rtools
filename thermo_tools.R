@@ -80,14 +80,19 @@ thetae_func<-function(q,p,tabs,p0=1e5){
 # WVP #
 #=====#
 
-compute_wvp   = function(z,rhov){
+compute_wvp   = function(z,rhov){  #z, rhov on s levs
             nz = length(z)
             zint = zinterp(z)
             dz   = diff(zint)  # length = nz-1
-            wvp  = array(dim=dim(rhov)[1:2])
-            wvp   = rhov[ , ,nz]*dz[nz-1]  # extrapolate dzvec
-            for (k in (nz-1):1){
-                 wvp = wvp + dz[k]*rhov[ , ,k]
+			if (length(dim(rhov))==3){
+	            wvp  = array(dim=dim(rhov)[1:2])
+    	        wvp   = rhov[ , ,nz]*dz[nz-1]  # extrapolate dzvec
+        	    for (k in (nz-1):1){
+            	     wvp = wvp + dz[k]*rhov[ , ,k]
+            	}
+            } else if (length(dim(rhov))==1){
+            	wvp  = rhov[nz]*dz[nz-1]
+            	wvp  = wvp +rhov[-nz]%*%dz
             }
             return(wvp)
 }

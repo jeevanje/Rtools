@@ -4,6 +4,7 @@
 #===============#
 
 source("~/Dropbox/Rtools/my_image_plot.R")
+latlab = "Latitude (deg)"
 
 global_mean = function(lon,lat,field){
 		# assumes lat/lon in degrees!
@@ -27,23 +28,28 @@ global_mean = function(lon,lat,field){
 		   }	
 		domega[is.na(field)] = NA
 		mean = sum(field*domega,na.rm=TRUE)/sum(domega,na.rm=TRUE)
-		mean
+		return(mean)
 		}
 
 plot_map <- function(lon,lat,field,main,zlim=range(field),
-			do_mean = TRUE, units = NULL,cex = 1.15,cex_leg = 1.15){
+			do_mean = TRUE, units = NULL, 
+			cex = 1.15, cex_mean=1.15, cex_leg = 1.15){
             my.image.plot(lon,lat,field,zlim=zlim,
                         xlab = "Longitude (deg)",
-			ylab = "Latitude (deg)", 
+						ylab = "Latitude (deg)", 
                         main = main,
-			cex.lab = cex,
-			cex.main = cex,
-			cex.axis = cex,
-			cex.legend  = cex_leg )
+						cex.lab = cex,
+						cex.main = cex,
+						cex.axis = cex,
+						cex.legend  = cex_leg )
             map("world2",add=TRUE,interior=FALSE)
             title("")
-            mean = global_mean(lon,lat,field)
-            mtext(bquote("Global mean = "~.(round(mean,1))~.(units)),at=360)
+	    if (do_mean){
+	        mean = global_mean(lon,lat,field)
+            	mtext(bquote("Global mean = "~.(round(mean,1))),
+            	     at=280,cex=cex_mean)
+	    }	     
+            mtext(units,3,at=430,cex=1.25)
             }
 
 
