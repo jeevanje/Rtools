@@ -6,7 +6,7 @@
 # computations     # 
 ####################
 
-Rtools_dir = "~/Rtools/"
+Rtools_dir = "~/Dropbox/Rtools/"
 source(paste(Rtools_dir,"calculus_tools.R",sep=""))
 
 L     = 2.5e6      # J/kg
@@ -54,6 +54,29 @@ k2f <- function(tabs){
 
 k2c <- function(tabs){
 		return(tabs - 273.15)
+}
+
+#================#
+# moist adiabat  #
+#================#
+make_adiabat = function(z,Ts,gamma,Ttp=200){  
+	     # Note: i,s levs not consistent
+	     nz = length(z)
+	     if (gamma != "m"){       # gamma = "m" or value in K/m
+		tabs  = Ts - gamma*z
+		p     = ps*(tabs/Ts)^(g/gamma/Rd)
+	     } else if (gamma == "m"){
+	        tabs    = numeric(nz)
+		p       = numeric(nz)
+		tabs[1] = Ts
+		p[1]    = ps
+		for (k in 2:nz){
+		    tabs[k] = tabs[k-1] - gamma_m(tabs[k-1],p[k-1])*(diff(z)[k-1])
+		    if (tabs[k] < Ttp){ tabs[k]=Ttp }
+		    p[k]    = p[k-1]    - g*p[k-1]/Rd/tabs[k-1]*(diff(z)[k-1])
+   	      	}
+	     }   	
+	     return(list(tabs,p))
 }
 
 #======================#
@@ -178,5 +201,5 @@ planck_k_interval = function(T,k1,k2){
 					n_kint 	 = length(kintvals)
 		     		kvals	 = (kintvals[1:(n_kint-1)] + kintvals[2:n_kint])/2
 					dkvec	 = diff(kintvals)
-					return(pi*planck_k(T,kvals)%*%dkvec)  # W/m^2
+					return(pi*t(planck_k(kvals,T))%*%dkvec)  # W/m^2
 }		     

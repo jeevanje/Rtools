@@ -72,19 +72,20 @@ my.image.plot <- function(x,y,z,...,
             par(plt = bigplot)			   # Set size of image region
         }
 
-	 	# plot image-only as png, save as temp.png
+ 	# plot image-only as png, save as temp.png
         library(png)
         png('temp.png')  # deleted 'cairo' type -- doesn't work!
         par(xaxs='i',yaxs='i',mar=c(0,0,0,0))  # Style for axis finding, no margin
-        image(x,y,z,axes=FALSE,xlab='',ylab='',col=col,zlim=zlim) # Plot image!
+        image(x,y,z,axes=FALSE,xlab='',ylab='',col=col,zlim=zlim,
+		ylim=ylim,log=log) # Plot image!
         dev.off()
         # Plot axes, ticks, and labels for image
         image(x,y,array(NA,dim=c(length(x),length(y))),
         	 xlab=xlab,ylab=ylab,main=main,xlim=xlim,ylim=ylim,log=log,
         	 cex.lab=cex.lab,cex.axis = cex.axis, 
         	 cex.main=cex.main, font.main=font.main)
-		# Add image to above skeleton
-        rasterImage(readPNG('temp.png'),min(x),min(y),max(x),max(y))
+	# Add image to above skeleton
+        rasterImage(readPNG('temp.png'),min(x),ylim[1],max(x),ylim[2])
         big.par <- par(no.readonly = TRUE)
     }
     if (!add.legend){ 

@@ -2,16 +2,29 @@
 # Plot parameters     #
 #---------------------#
 
-# axis labels
+# axis labels, independent vars
 zlab	 = "Height (km)"
 plab     = "Pressure (hPa)"
 tabslab  = "Temperature (K)"
+latlab   = "Latitude (deg)"
 klab     = expression(k~~"("*c*m^{-1}*")")
+
+# axis labels, dependent vars
+tauklab  = expression(tau[k])
 lntaulab = expression(ln~tau)
 kappalab = expression(kappa~~"("*m^{2}/kg*")")
+kappareflab = expression(kappa[ref]~~"("*m^{2}/kg*")")
+Fklab      = expression(F[k]~~"("~W/m^2/c*m^{-1}~")") 
+OLRklab    = expression(OLR[k]~~"("~W/m^2/c*m^{-1}~")") 
+
+
 
 # axis limits
 plim   = c(1000,0)
+
+#params
+mar_1dplot = c(5,6,5,3)  
+mar_2dplot = c(5,6,5,12) 
 
 #---------------------------#
 # Plot set-up functions     #
