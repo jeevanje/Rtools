@@ -15,11 +15,15 @@ source(paste(Rtoolsdir,"/thermo_tools.R",sep=""))
 #===============#
 
 # WVP as a function of k, for tau calculation! 
-compute_wvp_k   = function(z,rhov){
-	    #ssi !
-	    nz = length(z)
-	    zint = zinterp(z)
-	    dz   = diff(zint)  # length = nz-1
+compute_wvp_k   = function(z,rhov,lev="s"){
+	    # wvp on dam i grid, z on dam lev grid, rhov on dam s grid
+		if (lev=="i"){
+			dz   = diff(z)
+		} else if (lev=="s"){
+		    zint = zinterp(z)
+		    dz   = diff(zint)  # length = nz-1			
+		}
+	    nz   = length(z)
 	    wvp  = numeric(nz)
 	    wvp[nz] = rhov[nz]*dz[nz-1]  # extrapolate dzvec
 	    for (k in (nz-1):1){
@@ -40,7 +44,7 @@ compute_trans = function(tau){
 #====================#
 
 compute_Ugray = function(tau,Bvals,Bs=Bvals[1]){
-	    # tau ssi, Bvals sss
+	    # tau dam ssi, Bvals dam sss
 	    ntau  = length(tau)
 	    dtau  = diff(c(tau,0))
 	    Ugray = numeric(ntau+1)  #i levels + 1!
@@ -71,6 +75,10 @@ compute_Dgray = function(tau,Bvals){
 # Heating rates #
 #===============#
 
+# compute_ex outputs profiles of the ax and sx exchange terms, given 
+# source function (on model levels) and optical depth profiles (on interface
+# levels)
+
 compute_ex   = function(Bvals,tau){
 	       # tau ssi, Bvals sss	       
    	       epsilon=1e-10  # fudge for weird R bug in k_2tau
@@ -86,14 +94,14 @@ compute_ex   = function(Bvals,tau){
  	       	   if (tau_s[k] < taus/2){
 
 		      # ax		
-	       	      k_2tau = max(which(tau>2*tau_s[k]))  # i level
+	       	  k_2tau = max(which(tau>2*tau_s[k]))  # i level
 	   	      kvec   = 1:(k_2tau-1)  #s levs
-	       	      ax =  -sum(dtau[kvec]*(Bvals[kvec]-Bvals[k])*exp(-(tau_s[kvec]-tau_s[k])))
+	       	  ax =  -sum(dtau[kvec]*(Bvals[kvec]-Bvals[k])*exp(-(tau_s[kvec]-tau_s[k])))
 		      ex[['ax']][k] <- ax
 				   
 	 	      # sx	
 		      kvec1  = (k+1):N
-	       	      sx1    = -sum(dtau[kvec1]*(Bvals[kvec1]-Bvals[k])*exp(-(tau_s[k]-tau_s[kvec1])))
+	       	  sx1    = -sum(dtau[kvec1]*(Bvals[kvec1]-Bvals[k])*exp(-(tau_s[k]-tau_s[kvec1])))
 		      kvec2  = k_2tau:(k-1)	
 		      sx2    = -sum(dtau[kvec2]*(Bvals[kvec2]-Bvals[k])*exp(-(tau_s[kvec2]-tau_s[k])))		       	      
 		      gamma  = log(Bvals_i[k+1]/Bvals_i[k])/log(tau[k+1]/tau[k])
@@ -102,13 +110,13 @@ compute_ex   = function(Bvals,tau){
 				  	
 		   } else if (tau_s[k]>=taus/2){
 		      # ax	
-	       	      k_2tau = min(which(tau <= (2*tau_s[k]-taus + epsilon)))  # i level
+	       	  k_2tau = min(which(tau <= (2*tau_s[k]-taus + epsilon)))  # i level
 		      kvec   = k_2tau:N  #s levs
-	       	      ex[['ax']][k]  <- -sum(dtau[kvec]*(Bvals[kvec]-Bvals[k])*exp(-(tau_s[k]-tau_s[kvec])))
+	       	  ex[['ax']][k]  <- -sum(dtau[kvec]*(Bvals[kvec]-Bvals[k])*exp(-(tau_s[k]-tau_s[kvec])))
 	       	      
-	       	      # sx
+	       	  # sx
 		      kvec1  = 1:(k-1)
-	       	      sx1    = -sum(dtau[kvec1]*(Bvals[kvec1]-Bvals[k])*exp(-(tau_s[kvec1]-tau_s[k])))
+	       	  sx1    = -sum(dtau[kvec1]*(Bvals[kvec1]-Bvals[k])*exp(-(tau_s[kvec1]-tau_s[k])))
 		      kvec2  = (k+1):(k_2tau-1)	
 		      sx2    = -sum(dtau[kvec2]*(Bvals[kvec2]-Bvals[k])*exp(-(tau_s[k]-tau_s[kvec2])))		       	      
 		      ex[['sx']][k]  <- sx1 + sx2
@@ -129,12 +137,28 @@ compute_pptf = function(kappa,z,U,D,tabs,rhov,lapse) {
 # other #
 #=======# 
 
-tune_kappa = function(z,rhov,tabs,sst,olr){
-	     nz = length(z)
-	     cost = function(kappa){
-	     	     U = compute_Ugray(kappa,z,rhov,tabs,sst)
-		     return(U[nz]-olr)
-		     }
+tune_kappa_olr = function(wvp_k,tabs_s,Ts,olr){
+	     cost  = function(kappa){
+			     nz    = length(tabs_s)
+		    	 Bvals = B(tabs_s) 
+	 		     tau   = kappa*wvp_k  	     
+	     	     U     = compute_Ugray(tau,Bvals,B(Ts))
+		     	 return(U[nz]-olr)
+		 }
 	     kappa = uniroot(cost,interval=c(1e-2,1e1) )[[1]]
+	     return(kappa)
+	     }
+
+tune_kappa_Q = function(wvp_k,tabs_s,Ts,Q){
+	     cost  = function(kappa){
+			     nz    = length(tabs_s)
+		    	 Bvals = B(tabs_s) 
+	 		     tau   = kappa*wvp_k  	     
+	     	     U     = compute_Ugray(tau,Bvals,B(Ts))
+	     	     D     = compute_Dgray(tau,Bvals)
+				 Fnet  = U-D
+		     	 return(Fnet[nz]-Fnet[1] - Q)
+		 }
+	     kappa = uniroot(cost,interval=c(1e-1,1e1) )[[1]]
 	     return(kappa)
 	     }

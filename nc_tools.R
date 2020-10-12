@@ -5,7 +5,7 @@
 # files      #
 #============#
 
-Rtools_dir = "~/Rtools/"
+Rtools_dir = "~/Dropbox/Rtools/"
 source(paste(Rtools_dir,"calculus_tools.R",sep=""))
 
 get_profile = function(nc,period,varname){
