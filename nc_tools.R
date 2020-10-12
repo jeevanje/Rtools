@@ -10,17 +10,21 @@ source(paste(Rtools_dir,"calculus_tools.R",sep=""))
 
 get_profile = function(nc,period,varname){
 	      		# period assumed in days
-		        time = ncvar_get(nc,"time")
-				time_start = max(time) - period
-				if (time_start < 0 ){
-				   print("error: period longer than record")
-				   return()
-				}
-				nt_start = which.min(abs(time-time_start))
-		        var2D = ncvar_get(nc,start=c(1,nt_start),varname)
-				var = apply(var2D,1,mean)
-				return(var)      
-				}
+		        time = try(ncvar_get(nc,"time"),silent=TRUE)
+			if (is.numeric(time)){
+			    time_start = max(time) - period
+			    if (time_start < 0 ){
+			       print("error: period longer than record")
+			       return()
+			    }
+			    nt_start = which.min(abs(time-time_start))
+			    var2D = ncvar_get(nc,start=c(1,nt_start),varname)
+			    var = apply(var2D,1,mean)
+			 } else if (!is.numeric(time)){
+			    var = ncvar_get(nc,varname)
+			 }
+    		         return(var)      
+		}
 
 get_slice = function(nc,nt_avg,varname){
 	        time = ncvar_get(nc,"time")
